@@ -1,3 +1,32 @@
+class CadastroUsuario {
+  final String tipo;
+  final String cidade;
+  final String nome;
+  final String cpf;
+  final String email;
+  final String emailDestino;
+
+  CadastroUsuario({
+    required this.tipo,
+    required this.cidade,
+    required this.nome,
+    required this.cpf,
+    required this.email,
+    required this.emailDestino,
+  });
+
+  @override
+  String toString() {
+    return 'CadastroUsuario(tipo: $tipo, cidade: $cidade, nome: $nome, cpf: $cpf, email: $email, emailDestino: $emailDestino)';
+  }
+}
+
+// Lista simulando um banco de dados temporário em memória
+List<CadastroUsuario> cadastrosRecebidos = [];
+
+
+
+/*
 // lib/user_data.dart
 class UserData {
   static String? nomeUsuario;
@@ -30,4 +59,4 @@ class UserData {
     UserData.emailUsuario = emailUsuario;
     UserData.senhaUsuario = senhaUsuario;
   }
-}
+}  */

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'telas/tela_login.dart';
-import 'telas/tela_cadastro.dart';
-import 'package:smartbusserra/telas/home_aluno.dart';
-import 'package:smartbusserra/telas/home_coord.dart';
-import 'package:smartbusserra/telas/home_motorista.dart';
-import 'package:smartbusserra/user_data.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

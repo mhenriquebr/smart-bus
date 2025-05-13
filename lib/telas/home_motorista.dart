@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartbusserra/telas/tela_login.dart';
-import 'package:smartbusserra/telas/tela_cadastro.dart';
+/*import 'package:smartbusserra/telas/tela_cadastro.dart';*/
 
 class HomeMotorista extends StatelessWidget {
   @override

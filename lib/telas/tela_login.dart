@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:smartbusserra/telas/home_aluno.dart';
 import 'package:smartbusserra/telas/home_motorista.dart';
 import 'package:smartbusserra/telas/home_coord.dart';
-import 'tela_cadastro.dart'; // Importa a tela de cadastro
 import 'package:smartbusserra/user_data.dart';
 
 Map<String, Map<String, dynamic>> usuariosSimulados = {
@@ -30,6 +29,18 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _senhaController = TextEditingController();
+
+  final _nomeController = TextEditingController();
+  final _cpfController = TextEditingController();
+  final _cadastroEmailController = TextEditingController();
+  String _tipoSelecionado = 'Aluno';
+  String _cidadeSelecionada = 'Brasil Novo';
+
+  final Map<String, String> cidadesEmail = {
+    'Brasil Novo': 'coordbrasil@smartbus.com',
+    'Vitória do Xingu': 'coordvitoria@smartbus.com',
+    'Medicilândia': 'coordmedicilandia@smartbus.com',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +97,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(height: 20),
+                      DropdownButtonFormField<String>(
+                        value: _tipoSelecionado,
+                        items: ['Aluno', 'Motorista', 'Coordenação']
+                            .map((tipo) => DropdownMenuItem(
+                                  value: tipo,
+                                  child: Text(tipo),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _tipoSelecionado = value!;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Tipo de usuário',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 10),
+                        ),
+                      ),
+                      SizedBox(height: 10),
                       _buildTextInput("Usuário (E-mail)",
                           controller: _emailController, isEmail: true),
                       _buildTextInput("Senha",
@@ -107,13 +139,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       ElevatedButton(
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // Ação após o login ser validado
-                            // Você pode só mostrar uma mensagem, por exemplo:
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content:
-                                      Text('Login realizado com sucesso!')),
-                            );
+                            final email = _emailController.text.trim();
+                            final senha = _senhaController.text.trim();
+
+                            if (usuariosSimulados.containsKey(email) &&
+                                usuariosSimulados[email]!['senha'] == senha) {
+                              final tipo = usuariosSimulados[email]!['tipo'];
+                              Widget destino;
+
+                              if (tipo == 'aluno') {
+                                destino = HomeAluno(cidadeAluno: 'Brasil Novo');
+                              } else if (tipo == 'motorista') {
+                                destino = HomeMotorista();
+                              } else {
+                                destino = HomeCoordenacao();
+                              }
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => destino),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Credenciais inválidas')),
+                              );
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -124,57 +175,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text("ENTRAR"),
                       ),
                       SizedBox(height: 10),
-                      OutlinedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            String email = _emailController.text.trim();
-                            String senha = _senhaController.text;
-
-                            if (usuariosSimulados.containsKey(email) &&
-                                usuariosSimulados[email]!['senha'] == senha) {
-                              String tipo = usuariosSimulados[email]!['tipo'];
-
-                              Widget proximaTela;
-                              switch (tipo) {
-                                case 'aluno':
-                                  proximaTela = HomeAluno(
-                                      cidadeAluno: UserData.cidadeAluno ??
-                                          'Cidade desconhecida');
-                                  break;
-                                case 'motorista':
-                                  proximaTela = HomeMotorista();
-                                  break;
-                                case 'coordenacao':
-                                  proximaTela = HomeCoordenacao();
-                                  break;
-                                default:
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(
-                                            'Tipo de usuário desconhecido')),
-                                  );
-                                  return;
-                              }
-
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => proximaTela),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text('E-mail ou senha inválidos')),
-                              );
-                            }
-                          }
-                        },
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.pinkAccent,
-                          side: BorderSide(color: Colors.pinkAccent),
-                          minimumSize: Size(double.infinity, 50),
+                      TextButton(
+                        onPressed: () => _mostrarFormularioCadastro(context),
+                        child: Text(
+                          "NÃO TENHO CADASTRO",
+                          style: TextStyle(color: Colors.pinkAccent),
                         ),
-                        child: Text("CADASTRAR USUÁRIO"),
                       ),
                     ],
                   ),
@@ -218,6 +224,149 @@ class _LoginScreenState extends State<LoginScreen> {
           return null;
         },
       ),
+    );
+  }
+
+  void _mostrarFormularioCadastro(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return Padding(
+          padding: EdgeInsets.only(
+            top: 20,
+            left: 20,
+            right: 20,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Cadastro",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  child: Text(
+                    "Seus dados serão enviados para a Coordenação responsável da sua cidade e em breve retornarão com Login e sua Senha ao seu e-mail informado abaixo.",
+                    style: TextStyle(color: Colors.black87, fontSize: 14),
+                  ),
+                ),
+                SizedBox(height: 10),
+                DropdownButtonFormField<String>(
+                  value: _tipoSelecionado,
+                  items: ['Aluno', 'Motorista', 'Coordenação']
+                      .map((tipo) => DropdownMenuItem(
+                            value: tipo,
+                            child: Text(tipo),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _tipoSelecionado = value!;
+                    });
+                  },
+                  decoration: InputDecoration(labelText: 'Tipo de usuário'),
+                ),
+                DropdownButtonFormField<String>(
+                  value: _cidadeSelecionada,
+                  items: cidadesEmail.keys
+                      .map((cidade) => DropdownMenuItem(
+                            value: cidade,
+                            child: Text(cidade),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _cidadeSelecionada = value!;
+                    });
+                  },
+                  decoration: InputDecoration(labelText: 'Cidade'),
+                ),
+                TextField(
+                  controller: _nomeController,
+                  decoration: InputDecoration(labelText: 'Nome completo'),
+                ),
+                TextField(
+                  controller: _cpfController,
+                  decoration: InputDecoration(labelText: 'CPF'),
+                  keyboardType: TextInputType.number,
+                ),
+                TextField(
+                  controller: _cadastroEmailController,
+                  decoration: InputDecoration(labelText: 'E-mail'),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    final nome = _nomeController.text.trim();
+                    final cpf = _cpfController.text.trim();
+                    final email = _cadastroEmailController.text.trim();
+                    final cidade = _cidadeSelecionada;
+                    final tipo = _tipoSelecionado;
+                    final emailDestino = cidadesEmail[cidade] ?? '';
+
+                    if (nome.isNotEmpty &&
+                        cpf.isNotEmpty &&
+                        email.isNotEmpty &&
+                        RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                            .hasMatch(email)) {
+                      // Armazenar localmente
+                      final novoCadastro = CadastroUsuario(
+                        tipo: tipo,
+                        cidade: cidade,
+                        nome: nome,
+                        cpf: cpf,
+                        email: email,
+                        emailDestino: emailDestino,
+                      );
+
+                      cadastrosRecebidos.add(novoCadastro);
+                      print("Cadastro recebido: $novoCadastro");
+
+                      // Fecha o formulário e notifica o usuário
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Cadastro enviado para $emailDestino com sucesso!'),
+                        ),
+                      );
+
+                      // Limpa os campos
+                      _nomeController.clear();
+                      _cpfController.clear();
+                      _cadastroEmailController.clear();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text('Preencha todos os campos corretamente!')),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pinkAccent,
+                    foregroundColor: Colors.white,
+                    minimumSize: Size(double.infinity, 50),
+                  ),
+                  child: Text("Enviar Cadastro"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
