@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               } else if (tipo == 'motorista') {
                                 destino = HomeMotorista();
                               } else {
-                                destino = HomeCoordenacao();
+                                destino = HomeCoordenador();
                               }
 
                               Navigator.push(

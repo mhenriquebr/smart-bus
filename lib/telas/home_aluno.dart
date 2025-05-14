@@ -81,6 +81,7 @@ class _HomeAlunoState extends State<HomeAluno> {
     String dataAtual = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
     return Scaffold(
+      
       appBar: AppBar(
         backgroundColor: Colors.pinkAccent,
         foregroundColor: Colors.white,
