@@ -5,15 +5,15 @@ import 'package:smartbusserra/telas/home_coord.dart';
 import 'package:smartbusserra/user_data.dart';
 
 Map<String, Map<String, dynamic>> usuariosSimulados = {
-  "aluno@email.com": {
+  "aluno@gmail.com": {
     "senha": "123456",
     "tipo": "aluno",
   },
-  "motorista@email.com": {
+  "motorista@gmail.com": {
     "senha": "123456",
     "tipo": "motorista",
   },
-  "coord@email.com": {
+  "coord@gmail.com": {
     "senha": "123456",
     "tipo": "coordenacao",
   },
@@ -78,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           children: [
                             Text(
-                              "SMART BUS SERRA",
+                              "SMART BUS",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 10),
                             Text(
-                              "Viagem Segura!",
+                              "Mais segurança e menos espera!",
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,

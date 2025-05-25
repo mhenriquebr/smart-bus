@@ -21,6 +21,14 @@ class CadastroUsuario {
   }
 }
 
+class UserData {
+  static String? nome;
+  static String? email;
+  static String? telefone;
+  static String? imagemPerfil;
+  static String? senha;
+}
+
 // Lista simulando um banco de dados temporário em memória
 List<CadastroUsuario> cadastrosRecebidos = [];
 

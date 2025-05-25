@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:smartbusserra/telas/tela_login.dart';
 import 'package:smartbusserra/user_data.dart';
-import 'package:intl/intl.dart';
+import 'package:smartbusserra/telas/perfil_page.dart';
 
 class HomeAluno extends StatefulWidget {
   final String cidadeAluno;
@@ -32,6 +35,14 @@ class _HomeAlunoState extends State<HomeAluno> {
     },
   ];
 
+  final TextEditingController _telefoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _telefoneController.text = UserData.telefone ?? '';
+  }
+
   void confirmarPresenca(int index) {
     setState(() {
       onibusDisponiveis[index]['presencaConfirmada'] = true;
@@ -49,24 +60,43 @@ class _HomeAlunoState extends State<HomeAluno> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text("Editar Perfil"),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(decoration: InputDecoration(labelText: "Telefone")),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                // lógica para selecionar imagem
-              },
-              child: Text("Alterar Foto de Perfil"),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.pinkAccent,
-                foregroundColor: Colors.white,
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (UserData.imagemPerfil != null)
+                CircleAvatar(
+                  backgroundImage: FileImage(File(UserData.imagemPerfil!)),
+                  radius: 40,
+                ),
+              SizedBox(height: 10),
+              TextField(
+                controller: _telefoneController,
+                decoration: InputDecoration(labelText: "Telefone"),
+                keyboardType: TextInputType.phone,
               ),
-            ),
-          ],
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _alterarFotoPerfil,
+                child: Text("Alterar Foto de Perfil"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.pinkAccent,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                UserData.telefone = _telefoneController.text;
+              });
+              Navigator.pop(context);
+            },
+            child: Text("Salvar"),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text("Fechar"),
@@ -76,12 +106,22 @@ class _HomeAlunoState extends State<HomeAluno> {
     );
   }
 
+  void _alterarFotoPerfil() async {
+    final picker = ImagePicker();
+    final XFile? imagemSelecionada =
+        await picker.pickImage(source: ImageSource.gallery);
+    if (imagemSelecionada != null) {
+      setState(() {
+        UserData.imagemPerfil = imagemSelecionada.path;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String dataAtual = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
     return Scaffold(
-      
       appBar: AppBar(
         backgroundColor: Colors.pinkAccent,
         foregroundColor: Colors.white,
@@ -94,18 +134,17 @@ class _HomeAlunoState extends State<HomeAluno> {
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert),
             onSelected: (value) {
-              if (value == 'perfil') abrirPerfil();
+              if (value == 'perfil') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PerfilPage()),
+                );
+              }
               if (value == 'sair') Navigator.pop(context);
             },
             itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'perfil',
-                child: Text('Perfil'),
-              ),
-              PopupMenuItem(
-                value: 'sair',
-                child: Text('Sair'),
-              ),
+              PopupMenuItem(value: 'perfil', child: Text('Perfil')),
+              PopupMenuItem(value: 'sair', child: Text('Sair')),
             ],
           ),
         ],
@@ -115,6 +154,25 @@ class _HomeAlunoState extends State<HomeAluno> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (UserData.imagemPerfil != null || UserData.telefone != null)
+              Row(
+                children: [
+                  if (UserData.imagemPerfil != null)
+                    CircleAvatar(
+                      backgroundImage: FileImage(File(UserData.imagemPerfil!)),
+                      radius: 25,
+                    ),
+                  if (UserData.telefone != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 12.0),
+                      child: Text(
+                        "Telefone: ${UserData.telefone}",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                ],
+              ),
+            SizedBox(height: 20),
             Text(
               "Ônibus disponíveis hoje",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
