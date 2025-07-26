@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:smartbusserra/telas/home_aluno.dart';
 import 'package:smartbusserra/telas/home_motorista.dart';
 import 'package:smartbusserra/telas/home_coord.dart';
@@ -41,6 +42,22 @@ class _LoginScreenState extends State<LoginScreen> {
     'Vitória do Xingu': 'coordvitoria@smartbus.com',
     'Medicilândia': 'coordmedicilandia@smartbus.com',
   };
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.pinkAccent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemNavigationBarColor:
+            Colors.black26, // Cor translúcida da barra inferior
+        systemNavigationBarIconBrightness:
+            Brightness.light, // Ícones da barra inferior
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,27 +114,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                        value: _tipoSelecionado,
-                        items: ['Aluno', 'Motorista', 'Coordenação']
-                            .map((tipo) => DropdownMenuItem(
-                                  value: tipo,
-                                  child: Text(tipo),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _tipoSelecionado = value!;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          labelText: 'Tipo de usuário',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                        ),
-                      ),
-                      SizedBox(height: 10),
                       _buildTextInput("Usuário (E-mail)",
                           controller: _emailController, isEmail: true),
                       _buildTextInput("Senha",
@@ -170,13 +166,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.pinkAccent,
                           foregroundColor: Colors.white,
-                          minimumSize: Size(double.infinity, 50),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 24),
+                          minimumSize: Size(double.infinity, 0),
                         ),
                         child: Text("ENTRAR"),
                       ),
                       SizedBox(height: 10),
-                      TextButton(
+                      OutlinedButton(
                         onPressed: () => _mostrarFormularioCadastro(context),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: Colors.pinkAccent),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 14, horizontal: 24),
+                          minimumSize: Size(double.infinity, 0),
+                        ),
                         child: Text(
                           "NÃO TENHO CADASTRO",
                           style: TextStyle(color: Colors.pinkAccent),
@@ -321,7 +325,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         email.isNotEmpty &&
                         RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                             .hasMatch(email)) {
-                      // Armazenar localmente
                       final novoCadastro = CadastroUsuario(
                         tipo: tipo,
                         cidade: cidade,
@@ -334,7 +337,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       cadastrosRecebidos.add(novoCadastro);
                       print("Cadastro recebido: $novoCadastro");
 
-                      // Fecha o formulário e notifica o usuário
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -343,7 +345,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       );
 
-                      // Limpa os campos
                       _nomeController.clear();
                       _cpfController.clear();
                       _cadastroEmailController.clear();
@@ -358,7 +359,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.pinkAccent,
                     foregroundColor: Colors.white,
-                    minimumSize: Size(double.infinity, 50),
+                    minimumSize: Size(double.infinity, 48),
                   ),
                   child: Text("Enviar Cadastro"),
                 ),

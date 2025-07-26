@@ -27,6 +27,7 @@ class UserData {
   static String? telefone;
   static String? imagemPerfil;
   static String? senha;
+  static String? cidade;
 }
 
 // Lista simulando um banco de dados temporário em memória

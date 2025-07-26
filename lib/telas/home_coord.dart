@@ -219,6 +219,22 @@ class _HomeCoordenadorState extends State<HomeCoordenador> {
     );
   }
 
+  void _consultarUsuarios() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Consulta de Usuários'),
+        content: Text('Não temos usuários cadastrados no momento.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK', style: TextStyle(color: Color(0xFFD81B60))),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildRelatorioCard(
       String title, IconData icon, String value, Color color) {
     return Card(
@@ -420,6 +436,8 @@ class _HomeCoordenadorState extends State<HomeCoordenador> {
             onSelected: (value) {
               if (value == 'perfil') {
                 // Navegar para perfil
+              } else if (value == 'consultar') {
+                _consultarUsuarios();
               } else if (value == 'sair') {
                 Navigator.pushReplacement(
                   context,
@@ -435,6 +453,16 @@ class _HomeCoordenadorState extends State<HomeCoordenador> {
                     Icon(Icons.person, color: Color(0xFFD81B60)),
                     SizedBox(width: 8),
                     Text('Perfil'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'consultar',
+                child: Row(
+                  children: [
+                    Icon(Icons.search, color: Color(0xFFD81B60)),
+                    SizedBox(width: 8),
+                    Text('Consultar Usuário'),
                   ],
                 ),
               ),
@@ -468,13 +496,7 @@ class _HomeCoordenadorState extends State<HomeCoordenador> {
         selectedItemColor: Color(0xFFD81B60),
         onTap: _onItemTapped,
       ),
-      floatingActionButton: _selectedIndex == 1
-          ? FloatingActionButton(
-              onPressed: _abrirFormularioCadastro,
-              backgroundColor: Color(0xFFD81B60),
-              child: Icon(Icons.add, color: Colors.white),
-            )
-          : null,
+      // Removido o FloatingActionButton conforme solicitado
     );
   }
 }
